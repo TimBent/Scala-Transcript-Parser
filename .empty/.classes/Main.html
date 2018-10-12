@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Main</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">&lt;empty package name&gt;</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Main (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+  <tr>
+    <td class="name">Main$</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/ 15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/ 15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;import java.io.File
+<i>2</i>&nbsp;import java.nio.charset.CodingErrorAction
+<i>3</i>&nbsp;
+<i>4</i>&nbsp;import Models.{Results, Seconds, Transcript}
+<i>5</i>&nbsp;import com.google.gson.Gson
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import scala.io.{Codec, Source}
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp;  *
+<i>11</i>&nbsp;  * @author Timothy Bent on 11/10/2018
+<i>12</i>&nbsp;  *
+<i>13</i>&nbsp;  */
+<b class="fc"><i>14</i>&nbsp;object Main extends App {</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;  override def main ( args : Array[String]): Unit ={
+<b class="fc"><i>18</i>&nbsp;    val paths = List[String](&quot;C:\\Users\\tim-b\\Downloads\\json%2Frecording 1 implementation.json&quot;, &quot;C:\\Users\\tim-b\\Downloads\\json%2FRecorder 2 functionality.json&quot;, &quot;C:\\Users\\tim-b\\Downloads\\json%2Frecorder 3 Timer implement.json&quot;)</b>
+<i>19</i>&nbsp;
+<b class="fc"><i>20</i>&nbsp;    println(s&quot;Start Time ${System.currentTimeMillis()}&quot;)</b>
+<b class="fc"><i>21</i>&nbsp;    paths.foreach( p =&gt; decentralizeWordFromFile(p))</b>
+<b class="fc"><i>22</i>&nbsp;    println(s&quot;End Time ${System.currentTimeMillis()}&quot;)</b>
+<i>23</i>&nbsp;  }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;  def decentralizeWordFromFile( fileName : String){
+<b class="fc"><i>26</i>&nbsp;    var input = Source.fromFile(fileName)(Codec.UTF8.decoder.onMalformedInput(CodingErrorAction.IGNORE))</b>
+<b class="fc"><i>27</i>&nbsp;    var json = try input mkString finally input.close()</b>
+<b class="fc"><i>28</i>&nbsp;    var gson = new Gson()</b>
+<b class="fc"><i>29</i>&nbsp;    val transcript = gson.fromJson(json, classOf[Transcript])</b>
+<b class="fc"><i>30</i>&nbsp;    println(s&quot;This is the transcript for ${fileName.substring(fileName.lastIndexOf(&quot;\\&quot;) + 1)}&quot;)</b>
+<b class="fc"><i>31</i>&nbsp;    transcript.results.foreach(r =&gt; { println()</b>
+<b class="fc"><i>32</i>&nbsp;      r.alternatives.foreach({</b>
+<b class="fc"><i>33</i>&nbsp;        a =&gt; println(s&quot;Confidence: ${a.confidence} Transcript ${a.transcript}&quot;)</b>
+<b class="fc"><i>34</i>&nbsp;          a.words.foreach( w =&gt; println( s&quot; Word: ${w.word} Start Time ${convertTTValue(w.startTime.seconds)*1000 + (w.startTime.nanos/1000000)}ms End Time ${convertTTValue(w.endTime.seconds)*1000 + (w.endTime.nanos/1000000)}ms&quot;) )</b>
+<i>35</i>&nbsp;      })
+<i>36</i>&nbsp;    })
+<i>37</i>&nbsp;  }
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;  def convertTTValue( seconds : Seconds): Int = { seconds.low + seconds.high &gt;&gt;&gt; 1 }</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;}
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/*public ArrayList&lt;Words&gt; getWordStream() {
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;        ArrayList&lt;Words&gt; wordList = new ArrayList&lt;&gt;();
+<i>47</i>&nbsp;        transcript.results.forEach((Results r) -&gt; r.alternatives.forEach((Alternatives a) -&gt; a.words.stream().map(w -&gt; new Words(w.startTime, w.endTime, w.word)).forEach(wordList::add)));
+<i>48</i>&nbsp;        return null;
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public ArrayList&lt;Words&gt; getWordStreams() {
+<i>52</i>&nbsp;        ArrayList&lt;Words&gt; wordList2 = new ArrayList&lt;&gt;();
+<i>53</i>&nbsp;        transcript.results.stream()
+<i>54</i>&nbsp;                .map(r -&gt; r.alternatives.stream().map(a -&gt; a.words.stream().map(w -&gt; wordList2.add(new Words(w.startTime, w.endTime, w.word)))));
+<i>55</i>&nbsp;        return wordList2;
+<i>56</i>&nbsp;    }*/
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-10-11 15:41</div>
+</div>
+</body>
+</html>
